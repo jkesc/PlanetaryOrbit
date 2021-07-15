@@ -5,10 +5,11 @@ Created on Mon Jul 12 12:53:15 2021
 @author: jkescher
 """
 class body:
-    def __init__(self,mass=0,location=[0,0],force=[0,0]): #initializing stationary planetary object with mass, position and force acting on it
+    def __init__(self,mass=0,location=[0,0],force=[0,0],name=''): #initializing stationary planetary object with mass, position and force acting on it
         self.setMass(mass)
         self.setLocation(location)
         self.setForce(force)
+        self.setName(name)
 #Making set and get methods for the class        
     def getMass(self):
             return self.m
@@ -19,6 +20,10 @@ class body:
     def getForce(self):
         return self.f
     
+            
+    def getName(self):
+        return self.n
+    
     def setMass(self,mass):
         self.m=mass
     
@@ -27,22 +32,26 @@ class body:
         
     def setForce(self,force):
         self.f=force
+        
+    def setName(self,name):
+        self.n=name
     
     def addForce(self, force):
         self.setForce([self.getForce()[0]+force[0],self.getForce()[1]+force[1]])
         
     def updateLocation(self,l):
         return
-        
+    
 #expanding on the body class to include velocities    
 class planet(body):
     
-     def __init__(self,mass=0,location=[0,0],force=[0,0],velocity=[0,0]):
+     def __init__(self,mass=0,location=[0,0],force=[0,0],velocity=[0,0],name=''):
          #super(planet,self).__init__(mass,location,force)
          self.setLocation(location)
          self.setMass(mass)
          self.setVelocity(velocity)
          self.setForce(force)
+         self.setName(name)
     
      def setVelocity(self,velocity):
          self.v=velocity
@@ -65,17 +74,23 @@ class solarSystem():
     
     def drawSystem(self):#plots all planets
         import matplotlib.pyplot as plt
+        leg=[]
         for i in self.p:
             plt.plot(i.getLocation()[0],i.getLocation()[1],'o')
-         
-        plt.xlim([-20,20])
-        plt.ylim([-20,20])            
+            leg.append(i.getName()[0])
+        
+        plt.axis('equal')
+        plt.ylim([-4.5e12,4.5e12])
+        plt.xlim([-4.5e12,4.5e12]) 
+        #plt.legend(leg)       
         plt.show()
             
     def addPlanets(self,planets):#adds a new planet (playing god, eh?)
         for i in planets:
             self.p.append(i)
         
+    def getPlanets(self):
+        return self.p
     
     def gravitationalForce(self,b1,b2): #calculates gravitational force between two planets
         r=self.getDistance(b1,b2)
@@ -111,10 +126,16 @@ class solarSystem():
         
 def main():
     import time
-    x=body(100,[0,0],[0,0])
-    y=planet(10,[4,0],[0,0],[0,1])#mass, location, force, velocity
-    z=planet(1,[0,2],[0,0],[-2,0])
-    syst=solarSystem([x,y,z],0.05)
+    sun=body(1.989e30,[0,0],[0,0],name='Sol')
+    mercury=planet(3.3011e23,[57909050e3,0],[0,0],[0,47.9e3],name='Mercury')#mass, location, force, velocity
+    venus=planet(4.8675e24,[108208e6,0],[0,0],[0,35e3],name='Venus')#mass, location, force, velocity
+    earth=planet(5.972e24,[149598023e3,0],[0,0],[0,29.8e3],name='Earth')#mass, location, force, velocity
+    mars=planet(64171e23,[227939200e3,0],[0,0],[0,24.1e3],name='Mars')#mass, location, force, velocity
+    jupiter=planet(1.8982e27,[778.57e9,0],[0,0],[0,13.1e3],name='Jupiter')#mass, location, force, velocity
+    saturn=planet(5.6834e26,[1455.53e9,0],[0,0],[0,9.7e3],name='Saturn')#mass, location, force, velocity
+    uranus=planet(8.6810e25,[2875.04e9,0],[0,0],[0,6.8e3],name='Uranus')#mass, location, force, velocity
+    neptune=planet(1.02413e26,[4.5e12,0],[0,0],[0,5.4e3],name='Neptune')#mass, location, force, velocity
+    syst=solarSystem([sun,mercury,venus,earth,mars,jupiter,saturn,uranus,neptune,],dt=86400)
     while True:
         time.sleep(0.2)
         syst.drawSystem()
